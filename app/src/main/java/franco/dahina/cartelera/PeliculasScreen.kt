@@ -1,3 +1,4 @@
+
 package franco.dahina.cartelera
 
 import androidx.compose.foundation.Image
@@ -17,23 +18,54 @@ import androidx.compose.ui.unit.dp
 import franco.dahina.cartelera.ui.theme.CarteleraTheme
 
 @Composable
-fun PeliculasScreen(onPeliculaClick: (Int) -> Unit) {
+fun PeliculasScreen(
+    correo: String,
+    onPeliculaClick: (Int) -> Unit,
+    onCerrarSesion: () -> Unit
+) {
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        Text(
-            text = "Películas",
-            style = MaterialTheme.typography.headlineMedium,
-            modifier = Modifier.padding(16.dp)
-        )
+        // Encabezado con correo y cierre de sesión
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
 
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Películas",
+                    style = MaterialTheme.typography.headlineMedium
+                )
+
+                Text(
+                    text = correo,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
+            TextButton(
+                onClick = onCerrarSesion
+            ) {
+                Text("Cerrar sesión")
+            }
+        }
+
+        // Lista original de películas
         LazyColumn(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+
             items(peliculas) { pelicula ->
+
                 PeliculaItem(
                     pelicula = pelicula,
                     onClick = {
@@ -50,15 +82,18 @@ fun PeliculaItem(
     pelicula: Pelicula,
     onClick: () -> Unit
 ) {
+
     Card(
         onClick = onClick,
         modifier = Modifier.fillMaxWidth()
     ) {
+
         Row(
             modifier = Modifier.padding(12.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+
             Image(
                 painter = painterResource(pelicula.imagen),
                 contentDescription = "Póster de ${pelicula.titulo}",
@@ -87,6 +122,10 @@ fun PeliculaItem(
 @Composable
 fun PeliculasScreenPreview() {
     CarteleraTheme {
-        PeliculasScreen(onPeliculaClick = { })
+        PeliculasScreen(
+            correo = "ejemplo@correo.com",
+            onPeliculaClick = {},
+            onCerrarSesion = {}
+        )
     }
 }

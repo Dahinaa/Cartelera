@@ -7,17 +7,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 
 @Composable
 fun AppNavigation(modifier: Modifier = Modifier) {
 
     val navController = rememberNavController()
 
+    val inicio = if (Firebase.auth.currentUser != null) {
+        "peliculas"
+    } else {
+        "login"
+    }
+
     NavHost(
         navController = navController,
-        startDestination = "login",
+        startDestination = inicio,
         modifier = modifier
     ) {
+
         composable("login") {
             LoginScreen(
                 onLoginOk = {
@@ -25,15 +34,46 @@ fun AppNavigation(modifier: Modifier = Modifier) {
                         popUpTo("login") {
                             inclusive = true
                         }
+                        launchSingleTop = true
                     }
+                },
+                onRegistrarse = {
+                    navController.navigate("registro")
+                }
+            )
+        }
+
+        composable("registro") {
+            RegistroScreen(
+                onRegistroOk = {
+                    navController.navigate("peliculas") {
+                        popUpTo("login") {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
+                },
+                onCancelar = {
+                    navController.popBackStack()
                 }
             )
         }
 
         composable("peliculas") {
             PeliculasScreen(
+                correo = Firebase.auth.currentUser?.email ?: "",
                 onPeliculaClick = { id ->
                     navController.navigate("detalle/$id")
+                },
+                onCerrarSesion = {
+                    Firebase.auth.signOut()
+
+                    navController.navigate("login") {
+                        popUpTo("peliculas") {
+                            inclusive = true
+                        }
+                        launchSingleTop = true
+                    }
                 }
             )
         }
